@@ -1,4 +1,3 @@
-# pylint: disable=protected-access
 import math
 
 from typing import List
@@ -9,8 +8,12 @@ from allennlp.interpret.saliency_interpreters.saliency_interpreter import Salien
 from allennlp.nn import util
 
 
-@SaliencyInterpreter.register('simple-gradient')
+@SaliencyInterpreter.register("simple-gradient")
 class SimpleGradient(SaliencyInterpreter):
+    """
+    Registered as a `SaliencyInterpreter` with name "simple-gradient".
+    """
+
     def saliency_interpret_from_json(self, inputs: JsonDict) -> JsonDict:
         """
         Interprets the model's prediction for inputs.  Gets the gradients of the loss with respect
@@ -42,7 +45,7 @@ class SimpleGradient(SaliencyInterpreter):
                 normalized_grad = [math.fabs(e) / norm for e in emb_grad]
                 grads[key] = normalized_grad
 
-            instances_with_grads['instance_' + str(idx + 1)] = grads
+            instances_with_grads["instance_" + str(idx + 1)] = grads
         return sanitize(instances_with_grads)
 
     def _register_forward_hook(self, embeddings_list: List):
@@ -52,7 +55,7 @@ class SimpleGradient(SaliencyInterpreter):
         our normalization scheme multiplies the gradient by the embedding value.
         """
 
-        def forward_hook(module, inputs, output):  # pylint: disable=unused-argument
+        def forward_hook(module, inputs, output):
             embeddings_list.append(output.squeeze(0).clone().detach().numpy())
 
         embedding_layer = util.find_embedding_layer(self.predictor._model)
